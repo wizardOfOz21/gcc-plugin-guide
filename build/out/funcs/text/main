@@ -1,8 +1,0 @@
-digraph main {
-compound=true
-2[label="		stmt: 'GIMPLE_ASSIGN' (6) { a__v6 = 1 }\n		stmt: 'GIMPLE_ASSIGN' (6) { b__v7 = 5 }\n		stmt: 'GIMPLE_ASSIGN' (6) { b__v8 = a__v6 }\n		stmt: 'GIMPLE_ASSIGN' (6) { unk_ssa_name__v9 = 0 }\n"]2->3
-
-3[label=""]3->1
-
-
-}
