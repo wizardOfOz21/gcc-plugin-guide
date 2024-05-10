@@ -4,15 +4,14 @@
 int foo(int a, int b)
 {
     int c = a + a;
-    c = 5;
     return 0;
 }
 
 int main()
 {
-    int a = 1;
-    int b = 5;
-    b = a;
+    char arr[10];
+
+    int a = arr[1];
 
     return 0;
 }

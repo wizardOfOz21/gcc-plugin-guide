@@ -1,5 +1,3 @@
-// Copyright (C) 2019 Mikhail Masyagin
-
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -66,22 +64,6 @@ struct phi_debug_pass : gimple_opt_pass
     virtual phi_debug_pass *clone() override { return this; }
 };
 
-// /*
-// static unsigned int phi_debug_on_gimple_phi(gimple stmt)
-// {
-//     std::cout << "\t\t" << "stmt: " << "GIMPLE_PHI" << " "<< "(" << GIMPLE_PHI << ")" << " {";
-//     for (unsigned int i = 0; i < gimple_phi_num_args(stmt); i++) {
-//         phi_debug_tree(gimple_phi_arg(stmt, i)->def);
-//         if (i != gimple_phi_num_args(stmt) - 1) {
-//             std::cout << ", ";
-//         }
-//     }
-//     std::cout << "}" << std::endl;
-
-//     return 0;
-// }
-// */
-
 #define PRINT(data) std::cout << data << std::endl;
 string out_path = "";
 
@@ -90,7 +72,6 @@ string phi_debug_op(enum tree_code code)
     std::stringstream ss;
     switch (code)
     {
-        // Arithmetical operators.
     case POINTER_PLUS_EXPR:
     case PLUS_EXPR:
         ss << "+";
@@ -110,14 +91,12 @@ string phi_debug_op(enum tree_code code)
     case RDIV_EXPR:
         ss << "/";
         break;
-        // Bit-shift operators.
     case LSHIFT_EXPR:
         ss << "<<";
         break;
     case RSHIFT_EXPR:
         ss << ">>";
         break;
-        // Bit-logical operators.
     case BIT_IOR_EXPR:
         ss << "|";
         break;
@@ -130,7 +109,6 @@ string phi_debug_op(enum tree_code code)
     case BIT_NOT_EXPR:
         ss << "!";
         break;
-        // Truth-logical operators.
     case TRUTH_ANDIF_EXPR:
     case TRUTH_AND_EXPR:
         ss << "&&";
@@ -144,7 +122,6 @@ string phi_debug_op(enum tree_code code)
         break;
     case TRUTH_NOT_EXPR:
         ss << "!";
-        // Relational operators.
     case LT_EXPR:
     case UNLT_EXPR:
         ss << "<";
@@ -175,7 +152,6 @@ string phi_debug_op(enum tree_code code)
     case ORDERED_EXPR:
         ss << "ord";
         break;
-        // Unknown operators.
     default:
         ss << "?(" << code << ")?";
         break;
@@ -188,7 +164,6 @@ string phi_debug_tree(tree t)
     std::stringstream ss;
     switch (TREE_CODE(t))
     {
-        // Constants.
     case INTEGER_CST:
         ss << TREE_INT_CST_LOW(t);
         break;
@@ -211,7 +186,6 @@ string phi_debug_tree(tree t)
     case STRING_CST:
         ss << "'" << TREE_STRING_POINTER(t) << "'";
         break;
-        // Declarations.
     case LABEL_DECL:
         ss << (DECL_NAME(t) ? IDENTIFIER_POINTER(DECL_NAME(t)) : "unk_label_decl") << ":";
         break;
@@ -224,73 +198,71 @@ string phi_debug_tree(tree t)
     case CONST_DECL:
         ss << (DECL_NAME(t) ? IDENTIFIER_POINTER(DECL_NAME(t)) : "unk_const_decl");
         break;
-        // Memory references.
     case COMPONENT_REF:
-        phi_debug_tree(TREE_OPERAND(t, 0));
+        ss << phi_debug_tree(TREE_OPERAND(t, 0));
         ss << "->";
-        phi_debug_tree(TREE_OPERAND(t, 1));
+        ss << phi_debug_tree(TREE_OPERAND(t, 1));
         break;
     case BIT_FIELD_REF:
-        phi_debug_tree(TREE_OPERAND(t, 0));
+        ss << phi_debug_tree(TREE_OPERAND(t, 0));
         ss << "->";
         ss << "(";
-        phi_debug_tree(TREE_OPERAND(t, 1));
+        ss << phi_debug_tree(TREE_OPERAND(t, 1));
         ss << " : ";
-        phi_debug_tree(TREE_OPERAND(t, 2));
+        ss << phi_debug_tree(TREE_OPERAND(t, 2));
         ss << ")";
         break;
     case ARRAY_REF:
-        phi_debug_tree(TREE_OPERAND(t, 0));
+        ss << "ARRAY_REF(";
+        ss << phi_debug_tree(TREE_OPERAND(t, 0));
         ss << "[";
-        phi_debug_tree(TREE_OPERAND(t, 1));
-        ss << "]";
+        ss << phi_debug_tree(TREE_OPERAND(t, 1));
+        ss << "])";
         break;
     case ARRAY_RANGE_REF:
-        phi_debug_tree(TREE_OPERAND(t, 0));
+        ss << phi_debug_tree(TREE_OPERAND(t, 0));
         ss << "[";
-        phi_debug_tree(TREE_OPERAND(t, 1));
+        ss << phi_debug_tree(TREE_OPERAND(t, 1));
         ss << ":";
-        // MAYBE RUNTIME EXCEPTION ?!!!
-        phi_debug_tree(TREE_OPERAND(t, 2));
+        ss << phi_debug_tree(TREE_OPERAND(t, 2));
         ss << "]";
         break;
     case INDIRECT_REF:
         ss << "*";
-        phi_debug_tree(TREE_OPERAND(t, 0));
+        ss << phi_debug_tree(TREE_OPERAND(t, 0));
         break;
     case CONSTRUCTOR:
         ss << "constructor";
         break;
     case ADDR_EXPR:
         ss << "&";
-        phi_debug_tree(TREE_OPERAND(t, 0));
+        ss << phi_debug_tree(TREE_OPERAND(t, 0));
         break;
     case TARGET_MEM_REF:
         ss << "TMR(";
         ss << "BASE: ";
-        phi_debug_tree(TREE_OPERAND(t, 0));
+        ss << phi_debug_tree(TREE_OPERAND(t, 0));
         ss << ", ";
         ss << "OFFSET: ";
-        phi_debug_tree(TREE_OPERAND(t, 1));
+        ss << phi_debug_tree(TREE_OPERAND(t, 1));
         ss << ", ";
         ss << "STEP: ";
-        phi_debug_tree(TREE_OPERAND(t, 2));
+        ss << phi_debug_tree(TREE_OPERAND(t, 2));
         ss << ", ";
         ss << "INDEX1: ";
-        phi_debug_tree(TREE_OPERAND(t, 3));
+        ss << phi_debug_tree(TREE_OPERAND(t, 3));
         ss << ", ";
         ss << "INDEX2: ";
-        phi_debug_tree(TREE_OPERAND(t, 4));
+        ss << phi_debug_tree(TREE_OPERAND(t, 4));
         ss << " )";
         break;
     case MEM_REF:
         ss << "((typeof(";
-        phi_debug_tree(TREE_OPERAND(t, 1));
+        ss << phi_debug_tree(TREE_OPERAND(t, 1));
         ss << "))";
-        phi_debug_tree(TREE_OPERAND(t, 0));
+        ss << phi_debug_tree(TREE_OPERAND(t, 0));
         ss << ")";
         break;
-        // SSA-name.
     case SSA_NAME:
     {
         gimple *stmt = SSA_NAME_DEF_STMT(t);
@@ -300,7 +272,7 @@ string phi_debug_tree(tree t)
             ss << " = GIMPLE_PHI(";
             for (unsigned int i = 0; i < gimple_phi_num_args(stmt); i++)
             {
-                phi_debug_tree(gimple_phi_arg(stmt, i)->def);
+                ss << phi_debug_tree(gimple_phi_arg(stmt, i)->def);
                 if (i != gimple_phi_num_args(stmt) - 1)
                 {
                     ss << ", ";
@@ -326,7 +298,7 @@ string phi_debug_tree(tree t)
 string phi_debug_on_unknown_stmt(gimple *stmt)
 {
     std::stringstream ss;
-    ss << "\t\t" << "stmt: " << "GIMPLE_UNKNOWN" << " " << "(" << gimple_code(stmt) << ")" << " {}";
+    ss << "GIMPLE_UNKNOWN";
     return ss.str();
 }
 
@@ -334,8 +306,8 @@ string phi_debug_on_gimple_return(gimple *stmt)
 {
     std::stringstream ss;
     PREFIX_UNUSED(stmt);
-    ss << "\t\t" << "stmt: " << "GIMPLE_RETURN" << " " << "(" << GIMPLE_RETURN << ")" << " {";
-    ss << "}";
+    ss << "GIMPLE_RETURN:  ";
+    ss << phi_debug_tree(gimple_return_retval((greturn*)stmt));
     return ss.str();
 }
 
@@ -343,9 +315,8 @@ string phi_debug_on_gimple_label(gimple *stmt)
 {
     std::stringstream ss;
     PREFIX_UNUSED(stmt);
-    ss << "\t\t" << "stmt: " << "GIMPLE_LABEL" << " " << "(" << GIMPLE_LABEL << ")" << " {";
-    ss << "}";
-
+    ss << "GIMPLE_LABEL:  ";
+    ss << phi_debug_tree(gimple_label_label((glabel*)stmt));
     return ss.str();
 }
 
@@ -353,37 +324,35 @@ string phi_debug_on_gimple_cond(gimple *stmt)
 {
     std::stringstream ss;
 
-    ss << "\t\t" << "stmt: " << "GIMPLE_COND" << " " << "(" << GIMPLE_COND << ")" << " { ";
-    phi_debug_tree(gimple_cond_lhs(stmt));
+    ss << "GIMPLE_COND:  ";
+    ss << phi_debug_tree(gimple_cond_lhs(stmt));
     ss << " ";
-    phi_debug_op(gimple_assign_rhs_code(stmt));
+    ss << phi_debug_op(gimple_assign_rhs_code(stmt));
     ss << " ";
-    phi_debug_tree(gimple_cond_rhs(stmt));
-    ss << " }";
+    ss << phi_debug_tree(gimple_cond_rhs(stmt));
     return ss.str();
 }
 
 string phi_debug_on_gimple_call(gimple *stmt)
 {
     std::stringstream ss;
-    ss << "\t\t" << "stmt: " << "GIMPLE_CALL" << " " << "(" << GIMPLE_CALL << ")" << " { ";
+    ss << "GIMPLE_CALL:  ";
     tree lhs = gimple_call_lhs(stmt);
     if (lhs)
     {
-        phi_debug_tree(lhs);
-        printf(" = ");
+        ss << phi_debug_tree(lhs);
+        ss << " = ";
     }
     ss << fndecl_name(gimple_call_fndecl(stmt)) << "(";
     for (unsigned int i = 0; i < gimple_call_num_args(stmt); i++)
     {
-        phi_debug_tree(gimple_call_arg(stmt, i));
+        ss << phi_debug_tree(gimple_call_arg(stmt, i));
         if (i != gimple_call_num_args(stmt) - 1)
         {
             ss << ", ";
         }
     }
     ss << ")";
-    ss << " }";
 
     return ss.str();
 }
@@ -391,7 +360,7 @@ string phi_debug_on_gimple_call(gimple *stmt)
 string phi_debug_on_gimple_assign(gimple *stmt)
 {
     std::stringstream ss;
-    ss << "\t\t" << "stmt: " << "GIMPLE_ASSIGN" << " " << "(" << GIMPLE_ASSIGN << ")" << " { ";
+    ss << "GIMPLE_ASSIGN:  ";
     switch (gimple_num_ops(stmt))
     {
     case 2:
@@ -400,7 +369,7 @@ string phi_debug_on_gimple_assign(gimple *stmt)
         ss << phi_debug_tree(gimple_assign_rhs1(stmt));
         break;
     case 3:
-        phi_debug_tree(gimple_assign_lhs(stmt));
+        ss << phi_debug_tree(gimple_assign_lhs(stmt));
         ss << " = ";
         ss << phi_debug_tree(gimple_assign_rhs1(stmt));
         ss << " ";
@@ -409,7 +378,6 @@ string phi_debug_on_gimple_assign(gimple *stmt)
         ss << phi_debug_tree(gimple_assign_rhs2(stmt));
         break;
     }
-    ss << " }";
 
     return ss.str();
 }
@@ -429,11 +397,6 @@ string phi_debug_statements(basic_block bb)
         case GIMPLE_CALL:
             ss << phi_debug_on_gimple_call(stmt);
             break;
-            /*
-        case GIMPLE_PHI:
-            phi_debug_on_gimple_phi(stmt);
-            break;
-            */
         case GIMPLE_COND:
             ss << phi_debug_on_gimple_cond(stmt);
             break;
@@ -447,7 +410,7 @@ string phi_debug_statements(basic_block bb)
             ss << phi_debug_on_unknown_stmt(stmt);
             break;
         }
-        ss << "\n";
+        ss << "\n\n";
     }
 
     return ss.str();
