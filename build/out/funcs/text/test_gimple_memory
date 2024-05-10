@@ -1,0 +1,19 @@
+digraph test_gimple_memory {
+compound=true
+2[label=""]2->8
+2->3
+
+3[label="		stmt: 'GIMPLE_ASSIGN' (6) { n.14__v1 = n }\n		stmt: 'GIMPLE_ASSIGN' (6) { unk_ssa_name__v2 = n.14__v1 }\n		stmt: 'GIMPLE_ASSIGN' (6) {  = unk_ssa_name__v2 * 12 }\n		stmt: 'GIMPLE_ASSIGN' (6) { i__v23 = 0 }\n"]3->5
+
+4[label="		stmt: 'GIMPLE_ASSIGN' (6) { unk_ssa_name__v4 = (i__v17 = GIMPLE_PHI(, )) }\n		stmt: 'GIMPLE_ASSIGN' (6) {  = unk_ssa_name__v4 * 12 }\n		stmt: 'GIMPLE_ASSIGN' (6) {  = arr__v22 + unk_ssa_name__v5 }\n		stmt: 'GIMPLE_ASSIGN' (6) { -> = (i__v17 = GIMPLE_PHI(, )) }\n		stmt: 'GIMPLE_ASSIGN' (6) { unk_ssa_name__v7 = (i__v17 = GIMPLE_PHI(, )) }\n		stmt: 'GIMPLE_ASSIGN' (6) {  = unk_ssa_name__v7 * 12 }\n		stmt: 'GIMPLE_ASSIGN' (6) {  = arr__v22 + unk_ssa_name__v8 }\n		stmt: 'GIMPLE_ASSIGN' (6) {  = (i__v17 = GIMPLE_PHI(, )) * (i__v17 = GIMPLE_PHI(, )) }\n		stmt: 'GIMPLE_ASSIGN' (6) { -> = unk_ssa_name__v10 }\n		stmt: 'GIMPLE_ASSIGN' (6) {  = (i__v17 = GIMPLE_PHI(, )) * (i__v17 = GIMPLE_PHI(, )) }\n		stmt: 'GIMPLE_ASSIGN' (6) { unk_ssa_name__v12 = (i__v17 = GIMPLE_PHI(, )) }\n		stmt: 'GIMPLE_ASSIGN' (6) {  = unk_ssa_name__v12 * 12 }\n		stmt: 'GIMPLE_ASSIGN' (6) {  = arr__v22 + unk_ssa_name__v13 }\n		stmt: 'GIMPLE_ASSIGN' (6) {  = (i__v17 = GIMPLE_PHI(, )) * unk_ssa_name__v11 }\n		stmt: 'GIMPLE_ASSIGN' (6) { -> = unk_ssa_name__v15 }\n		stmt: 'GIMPLE_ASSIGN' (6) {  = (i__v17 = GIMPLE_PHI(, )) + 1 }\n"]4->5
+
+5[label="		stmt: 'GIMPLE_ASSIGN' (6) { n.15__v16 = n }\n"]5->4
+5->6
+
+6[label="		stmt: 'GIMPLE_ASSIGN' (6) { unk_ssa_name__v24 = arr__v22 }\n		stmt: 'GIMPLE_ASSIGN' (6) { n = constructor }\n"]6->7
+
+7[label=""]7->1
+
+8[label="		stmt: 'GIMPLE_ASSIGN' (6) { n = constructor }\n"]
+
+}

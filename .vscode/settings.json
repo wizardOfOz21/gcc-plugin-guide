@@ -51,6 +51,8 @@
         "variant": "cpp",
         "vector": "cpp",
         "algorithm": "cpp",
-        "*.def": "cpp"
+        "*.def": "cpp",
+        "fstream": "cpp",
+        "iomanip": "cpp"
     }
 }

@@ -12,10 +12,16 @@ SRC_SBOX=$(shell ls src/sandbox/*.cpp)
 
 HEADERS=$(shell ls include/*.hpp)
 
-BUILD_PATH_TO_PLUGIN=build/plugin/plugin.so
+PLUGIN_NAME=plugin
+BUILD_PATH_TO_PLUGIN=build/plugin/${PLUGIN_NAME}.so
 BUILD_PATH_TO_SBOX=build/sandbox/sbox
 BUILD_PATH_TO_TESTS=build/test
 PATH_TO_TESTS=src/test
+
+OUT_PATH=build/out/funcs/text
+IMGS_PATH=build/out/funcs/imgs
+
+IMG_FORMAT=png
 
 plugin: ${SRC} ${SRC_PLUGIN} ${HEADERS}
 	mkdir -p build/plugin
@@ -26,9 +32,16 @@ sbox: ${SRC} ${SRC_SBOX} ${HEADERS}
 	${COMPILER} -Iinclude/ ${SRC} ${SRC_SBOX} -o ${BUILD_PATH_TO_SBOX}
 
 run: plugin
+	mkdir -p ${OUT_PATH}
 	mkdir -p build/test
-	${COMPILER} -fplugin=${BUILD_PATH_TO_PLUGIN} -O0 ${PATH_TO_TESTS}/test.c -o ${BUILD_PATH_TO_TESTS}/test
+	${COMPILER} -fplugin=${BUILD_PATH_TO_PLUGIN} -fplugin-arg-${PLUGIN_NAME}-out_path=${OUT_PATH} -O0 ${PATH_TO_TESTS}/test.c -o ${BUILD_PATH_TO_TESTS}/test
 	rm ${BUILD_PATH_TO_TESTS}/test
+
+print: run
+	mkdir -p build/out/funcs/imgs
+	for descr in $(shell ls ${OUT_PATH}) ; do \
+    	dot -T${IMG_FORMAT} -Gdpi=300 -o ${IMGS_PATH}/$$descr.${IMG_FORMAT} ${OUT_PATH}/$$descr; \
+	done
 
 sandbox: sbox
 	./${BUILD_PATH_TO_SBOX}

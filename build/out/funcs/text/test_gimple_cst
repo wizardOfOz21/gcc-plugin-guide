@@ -1,0 +1,34 @@
+digraph test_gimple_cst {
+compound=true
+2[label="		stmt: 'GIMPLE_ASSIGN' (6) { t__v8 = unk_ssa_name__v1 }\n"]2->13
+2->3
+
+3[label=""]3->13
+3->4
+
+4[label=""]4->13
+4->5
+
+5[label="		stmt: 'GIMPLE_ASSIGN' (6) { arr = *lC0 }\n"]5->13
+5->6
+
+6[label="		stmt: 'GIMPLE_ASSIGN' (6) { i__v14 = 0 }\n"]6->9
+
+7[label=""]7->13
+7->8
+
+8[label="		stmt: 'GIMPLE_ASSIGN' (6) {  = (i__v3 = GIMPLE_PHI(, )) + 1 }\n"]8->9
+
+9[label="		stmt: 'GIMPLE_ASSIGN' (6) { unk_ssa_name__v2 = (i__v3 = GIMPLE_PHI(, )) }\n"]9->7
+9->10
+
+10[label=""]10->13
+10->11
+
+11[label="		stmt: 'GIMPLE_ASSIGN' (6) { unk_ssa_name__v16 = 0 }\n		stmt: 'GIMPLE_ASSIGN' (6) { arr = constructor }\n"]11->12
+
+12[label=""]12->1
+
+13[label="		stmt: 'GIMPLE_ASSIGN' (6) { arr = constructor }\n"]
+
+}
