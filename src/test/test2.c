@@ -66,9 +66,5 @@ int main() {
     test_gimple_phi();
     test_gimple_memory();
 
-    int a = 1;
-    int b = 5;
-    b = a;
-
     return 0;
 }

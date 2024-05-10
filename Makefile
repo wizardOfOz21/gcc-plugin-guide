@@ -31,10 +31,11 @@ sbox: ${SRC} ${SRC_SBOX} ${HEADERS}
 	mkdir -p build/sandbox
 	${COMPILER} -Iinclude/ ${SRC} ${SRC_SBOX} -o ${BUILD_PATH_TO_SBOX}
 
+TEST_CASE=1
 run: plugin
 	mkdir -p ${OUT_PATH}
 	mkdir -p build/test
-	${COMPILER} -fplugin=${BUILD_PATH_TO_PLUGIN} -fplugin-arg-${PLUGIN_NAME}-out_path=${OUT_PATH} -O0 ${PATH_TO_TESTS}/test.c -o ${BUILD_PATH_TO_TESTS}/test
+	${COMPILER} -fplugin=${BUILD_PATH_TO_PLUGIN} -fplugin-arg-${PLUGIN_NAME}-out_path=${OUT_PATH} -O0 ${PATH_TO_TESTS}/test${TEST_CASE}.c -o ${BUILD_PATH_TO_TESTS}/test
 	rm ${BUILD_PATH_TO_TESTS}/test
 
 print: run
@@ -43,6 +44,8 @@ print: run
     	dot -T${IMG_FORMAT} -Gdpi=300 -o ${IMGS_PATH}/$$descr.${IMG_FORMAT} ${OUT_PATH}/$$descr; \
 	done
 
+cprint: clean print
+
 sandbox: sbox
 	./${BUILD_PATH_TO_SBOX}
 
@@ -50,4 +53,4 @@ sandbox: sbox
 .PHONY : clean
 
 clean:
-	rm -rf plugin src/test/test
+	rm -rf build

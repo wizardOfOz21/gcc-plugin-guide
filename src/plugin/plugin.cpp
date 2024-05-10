@@ -408,29 +408,29 @@ string phi_debug_statements(basic_block bb)
         gimple* stmt = gsi_stmt(gsi);
 
         switch (gimple_code(stmt)) {
-        case GIMPLE_ASSIGN:
-            ss << phi_debug_on_gimple_assign(stmt);
-            break;
-        case GIMPLE_CALL:
-            ss << phi_debug_on_gimple_call(stmt);
-            break;
-            /*
-        case GIMPLE_PHI:
-            phi_debug_on_gimple_phi(stmt);
-            break;
-            */
-        case GIMPLE_COND:
-            phi_debug_on_gimple_cond(stmt);
-            break;
-        case GIMPLE_LABEL:
-            phi_debug_on_gimple_label(stmt);
-            break;
-        case GIMPLE_RETURN:
-            phi_debug_on_gimple_return(stmt);
-            break;
-        default:
-            phi_debug_on_unknown_stmt(stmt);
-            break;
+            case GIMPLE_ASSIGN:
+                ss << phi_debug_on_gimple_assign(stmt);
+                break;
+            case GIMPLE_CALL:
+                ss << phi_debug_on_gimple_call(stmt);
+                break;
+                /*
+            case GIMPLE_PHI:
+                phi_debug_on_gimple_phi(stmt);
+                break;
+                */
+            case GIMPLE_COND:
+                phi_debug_on_gimple_cond(stmt);
+                break;
+            case GIMPLE_LABEL:
+                phi_debug_on_gimple_label(stmt);
+                break;
+            case GIMPLE_RETURN:
+                phi_debug_on_gimple_return(stmt);
+                break;
+            default:
+                phi_debug_on_unknown_stmt(stmt);
+                break;
         }
         ss << "\n";
     }
