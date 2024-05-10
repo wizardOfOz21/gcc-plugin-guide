@@ -7,11 +7,16 @@ int foo(int a, int b)
     return 0;
 }
 
+struct A {
+    int a;
+};
+
 int main()
 {
-    char arr[10];
+    struct A a = {1}; 
+    struct A *pa = &a;
 
-    int a = arr[1];
+    int b = pa->a;
 
     return 0;
 }

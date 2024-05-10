@@ -198,20 +198,7 @@ string phi_debug_tree(tree t)
     case CONST_DECL:
         ss << (DECL_NAME(t) ? IDENTIFIER_POINTER(DECL_NAME(t)) : "unk_const_decl");
         break;
-    case COMPONENT_REF:
-        ss << phi_debug_tree(TREE_OPERAND(t, 0));
-        ss << "->";
-        ss << phi_debug_tree(TREE_OPERAND(t, 1));
-        break;
-    case BIT_FIELD_REF:
-        ss << phi_debug_tree(TREE_OPERAND(t, 0));
-        ss << "->";
-        ss << "(";
-        ss << phi_debug_tree(TREE_OPERAND(t, 1));
-        ss << " : ";
-        ss << phi_debug_tree(TREE_OPERAND(t, 2));
-        ss << ")";
-        break;
+    // https://gcc.gnu.org/onlinedocs/gccint/Storage-References.html
     case ARRAY_REF:
         ss << "ARRAY_REF(";
         ss << phi_debug_tree(TREE_OPERAND(t, 0));
@@ -237,24 +224,6 @@ string phi_debug_tree(tree t)
     case ADDR_EXPR:
         ss << "&";
         ss << phi_debug_tree(TREE_OPERAND(t, 0));
-        break;
-    case TARGET_MEM_REF:
-        ss << "TMR(";
-        ss << "BASE: ";
-        ss << phi_debug_tree(TREE_OPERAND(t, 0));
-        ss << ", ";
-        ss << "OFFSET: ";
-        ss << phi_debug_tree(TREE_OPERAND(t, 1));
-        ss << ", ";
-        ss << "STEP: ";
-        ss << phi_debug_tree(TREE_OPERAND(t, 2));
-        ss << ", ";
-        ss << "INDEX1: ";
-        ss << phi_debug_tree(TREE_OPERAND(t, 3));
-        ss << ", ";
-        ss << "INDEX2: ";
-        ss << phi_debug_tree(TREE_OPERAND(t, 4));
-        ss << " )";
         break;
     case MEM_REF:
         ss << "((typeof(";
