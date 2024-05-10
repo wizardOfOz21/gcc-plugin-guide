@@ -65,26 +65,6 @@ struct phi_debug_pass : gimple_opt_pass {
     virtual phi_debug_pass *clone() override { return this; }
 };
 
-// static unsigned int phi_debug_on_gimple_call(gimple stmt)
-// {
-//     std::cout << "\t\t" << "stmt: " << "\"GIMPLE_CALL\"" << " " << "(" << GIMPLE_CALL << ")" << " { ";
-//     tree lhs = gimple_call_lhs (stmt);
-//     if (lhs) {
-//         phi_debug_tree(lhs);
-//         printf(" = ");
-//     }
-//     std::cout << fndecl_name(gimple_call_fndecl(stmt)) << "(";
-//     for (unsigned int i = 0; i < gimple_call_num_args(stmt); i++) {
-//         phi_debug_tree(gimple_call_arg(stmt, i));
-//         if (i != gimple_call_num_args(stmt) - 1) {
-//             std::cout << ", ";
-//         }
-//     }
-//     std::cout << ")";
-//     std::cout << " }" << std::endl;
-    
-//     return 0;
-// }
 
 // /*
 // static unsigned int phi_debug_on_gimple_phi(gimple stmt)
@@ -102,42 +82,8 @@ struct phi_debug_pass : gimple_opt_pass {
 // }
 // */
 
-// static unsigned int phi_debug_on_gimple_cond(gimple stmt)
-// {
-//     std::cout << "\t\t" << "stmt: " << "\"GIMPLE_COND\"" << " " << "(" << GIMPLE_COND << ")" << " { ";
-//     phi_debug_tree(gimple_cond_lhs(stmt));
-//     std::cout << " ";
-//     phi_debug_op(gimple_assign_rhs_code(stmt));
-//     std::cout << " ";
-//     phi_debug_tree(gimple_cond_rhs(stmt));
-//     std::cout << " }" << std::endl;
-    
-//     return 0;
-// }
-
-// static unsigned int phi_debug_on_gimple_label(gimple stmt) {
-//     PREFIX_UNUSED(stmt);
-//     std::cout << "\t\t" << "stmt: " << "\"GIMPLE_LABEL\"" << " " << "(" << GIMPLE_LABEL << ")" << " {";
-//     std::cout << "}" << std::endl;
-    
-//     return 0;
-// }
-
-// static unsigned int phi_debug_on_gimple_return(gimple stmt)
-// {
-//     PREFIX_UNUSED(stmt);
-//     std::cout << "\t\t" << "stmt: " << "\"GIMPLE_RETURN\"" << " " << "(" << GIMPLE_RETURN << ")" << " {";
-//     std::cout << "}" << std::endl;
-        
-//     return 0;
-// }
-
-// static unsigned int phi_debug_on_unknown_stmt(gimple stmt)
-// {
-//     std::cout << "\t\t" << "stmt: " << "\"GIMPLE_UNKNOWN\"" << " " << "(" << gimple_code(stmt) << ")" << " {}" << std::endl;
-    
-//     return 0;
-// }
+#define PRINT(data) std::cout << data << std::endl;
+string out_path = "";
 
 string phi_debug_op(enum tree_code code)
 {
@@ -369,8 +315,66 @@ string phi_debug_tree(tree t)
     return ss.str();
 }
 
-#define PRINT(data) std::cout << data << std::endl;
-string out_path = "";
+string phi_debug_on_unknown_stmt(gimple* stmt)
+{
+    std::stringstream ss;
+    ss << "\t\t" << "stmt: " << "\"GIMPLE_UNKNOWN\"" << " " << "(" << gimple_code(stmt) << ")" << " {}";
+    return ss.str();
+}
+
+string phi_debug_on_gimple_return(gimple* stmt)
+{
+    std::stringstream ss;
+    PREFIX_UNUSED(stmt);
+    ss << "\t\t" << "stmt: " << "\"GIMPLE_RETURN\"" << " " << "(" << GIMPLE_RETURN << ")" << " {";
+    ss << "}";
+    return ss.str();
+}
+
+string phi_debug_on_gimple_label(gimple* stmt) {
+    std::stringstream ss;
+    PREFIX_UNUSED(stmt);
+    ss << "\t\t" << "stmt: " << "\"GIMPLE_LABEL\"" << " " << "(" << GIMPLE_LABEL << ")" << " {";
+    ss << "}";
+    
+    return ss.str();
+}
+
+string phi_debug_on_gimple_cond(gimple* stmt)
+{
+    std::stringstream ss;
+
+    ss << "\t\t" << "stmt: " << "\"GIMPLE_COND\"" << " " << "(" << GIMPLE_COND << ")" << " { ";
+    phi_debug_tree(gimple_cond_lhs(stmt));
+    ss << " ";
+    phi_debug_op(gimple_assign_rhs_code(stmt));
+    ss << " ";
+    phi_debug_tree(gimple_cond_rhs(stmt));
+    ss << " }";
+    return ss.str();
+}
+
+string phi_debug_on_gimple_call(gimple* stmt)
+{
+    std::stringstream ss;
+    ss << "\t\t" << "stmt: " << "'GIMPLE_CALL'" << " " << "(" << GIMPLE_CALL << ")" << " { ";
+    tree lhs = gimple_call_lhs(stmt);
+    if (lhs) {
+        phi_debug_tree(lhs);
+        printf(" = ");
+    }
+    ss << fndecl_name(gimple_call_fndecl(stmt)) << "(";
+    for (unsigned int i = 0; i < gimple_call_num_args(stmt); i++) {
+        phi_debug_tree(gimple_call_arg(stmt, i));
+        if (i != gimple_call_num_args(stmt) - 1) {
+            ss << ", ";
+        }
+    }
+    ss << ")";
+    ss << " }";
+    
+    return ss.str();
+}
 
 string phi_debug_on_gimple_assign(gimple* stmt)
 {
@@ -405,30 +409,30 @@ string phi_debug_statements(basic_block bb)
 
         switch (gimple_code(stmt)) {
         case GIMPLE_ASSIGN:
-            ss << phi_debug_on_gimple_assign(stmt) << "\\n";
+            ss << phi_debug_on_gimple_assign(stmt);
             break;
-        // case GIMPLE_CALL:
-        //     phi_debug_on_gimple_call(stmt);
-        //     break;
-        //     /*
-        // case GIMPLE_PHI:
-        //     phi_debug_on_gimple_phi(stmt);
-        //     break;
-        //     */
-        // case GIMPLE_COND:
-        //     phi_debug_on_gimple_cond(stmt);
-        //     break;
-        // case GIMPLE_LABEL:
-        //     phi_debug_on_gimple_label(stmt);
-        //     break;
-        // case GIMPLE_RETURN:
-        //     phi_debug_on_gimple_return(stmt);
-        //     break;
-        // default:
-        //     phi_debug_on_unknown_stmt(stmt);
-        //     break;
-        // }
+        case GIMPLE_CALL:
+            ss << phi_debug_on_gimple_call(stmt);
+            break;
+            /*
+        case GIMPLE_PHI:
+            phi_debug_on_gimple_phi(stmt);
+            break;
+            */
+        case GIMPLE_COND:
+            phi_debug_on_gimple_cond(stmt);
+            break;
+        case GIMPLE_LABEL:
+            phi_debug_on_gimple_label(stmt);
+            break;
+        case GIMPLE_RETURN:
+            phi_debug_on_gimple_return(stmt);
+            break;
+        default:
+            phi_debug_on_unknown_stmt(stmt);
+            break;
         }
+        ss << "\n";
     }
 
     return ss.str();
