@@ -38,12 +38,12 @@ int plugin_is_GPL_compatible = 1;
 
 #include "print.hpp"
 
-static struct plugin_info phi_debug_plugin_info = {
+static struct plugin_info _plugin_info = {
     .version = PLUGIN_VERSION,
     .help = PLUGIN_HELP,
 };
 
-static const struct pass_data phi_debug_pass_data = {
+static const struct pass_data _pass_data = {
     .type = GIMPLE_PASS,
     .name = PLUGIN_NAME,
     .optinfo_flags = OPTGROUP_NONE,
@@ -57,17 +57,17 @@ static const struct pass_data phi_debug_pass_data = {
     .todo_flags_finish = 0,
 };
 
-struct phi_debug_pass : gimple_opt_pass
+struct _pass : gimple_opt_pass
 {
-    phi_debug_pass(gcc::context *ctx) : gimple_opt_pass(phi_debug_pass_data, ctx) {}
+    _pass(gcc::context *ctx) : gimple_opt_pass(_pass_data, ctx) {}
     virtual unsigned int execute(function *fun) override;
-    virtual phi_debug_pass *clone() override { return this; }
+    virtual _pass *clone() override { return this; }
 };
 
 #define PRINT(data) std::cout << data << std::endl;
 string out_path = "";
 
-string phi_debug_op(enum tree_code code)
+string _op(enum tree_code code)
 {
     std::stringstream ss;
     switch (code)
@@ -159,7 +159,7 @@ string phi_debug_op(enum tree_code code)
     return ss.str();
 }
 
-string phi_debug_tree(tree t)
+string _tree(tree t)
 {
     std::stringstream ss;
     switch (TREE_CODE(t))
@@ -201,35 +201,35 @@ string phi_debug_tree(tree t)
     // https://gcc.gnu.org/onlinedocs/gccint/Storage-References.html
     case ARRAY_REF:
         ss << "ARRAY_REF(";
-        ss << phi_debug_tree(TREE_OPERAND(t, 0));
+        ss << _tree(TREE_OPERAND(t, 0));
         ss << "[";
-        ss << phi_debug_tree(TREE_OPERAND(t, 1));
+        ss << _tree(TREE_OPERAND(t, 1));
         ss << "])";
         break;
     case ARRAY_RANGE_REF:
-        ss << phi_debug_tree(TREE_OPERAND(t, 0));
+        ss << _tree(TREE_OPERAND(t, 0));
         ss << "[";
-        ss << phi_debug_tree(TREE_OPERAND(t, 1));
+        ss << _tree(TREE_OPERAND(t, 1));
         ss << ":";
-        ss << phi_debug_tree(TREE_OPERAND(t, 2));
+        ss << _tree(TREE_OPERAND(t, 2));
         ss << "]";
         break;
     case INDIRECT_REF:
         ss << "*";
-        ss << phi_debug_tree(TREE_OPERAND(t, 0));
+        ss << _tree(TREE_OPERAND(t, 0));
         break;
     case CONSTRUCTOR:
         ss << "constructor";
         break;
     case ADDR_EXPR:
         ss << "&";
-        ss << phi_debug_tree(TREE_OPERAND(t, 0));
+        ss << _tree(TREE_OPERAND(t, 0));
         break;
     case MEM_REF:
         ss << "((typeof(";
-        ss << phi_debug_tree(TREE_OPERAND(t, 1));
+        ss << _tree(TREE_OPERAND(t, 1));
         ss << "))";
-        ss << phi_debug_tree(TREE_OPERAND(t, 0));
+        ss << _tree(TREE_OPERAND(t, 0));
         ss << ")";
         break;
     case SSA_NAME:
@@ -241,7 +241,7 @@ string phi_debug_tree(tree t)
             ss << " = GIMPLE_PHI(";
             for (unsigned int i = 0; i < gimple_phi_num_args(stmt); i++)
             {
-                ss << phi_debug_tree(gimple_phi_arg(stmt, i)->def);
+                ss << _tree(gimple_phi_arg(stmt, i)->def);
                 if (i != gimple_phi_num_args(stmt) - 1)
                 {
                     ss << ", ";
@@ -264,58 +264,58 @@ string phi_debug_tree(tree t)
     return ss.str();
 }
 
-string phi_debug_on_unknown_stmt(gimple *stmt)
+string _on_unknown_stmt(gimple *stmt)
 {
     std::stringstream ss;
     ss << "GIMPLE_UNKNOWN";
     return ss.str();
 }
 
-string phi_debug_on_gimple_return(gimple *stmt)
+string _on_gimple_return(gimple *stmt)
 {
     std::stringstream ss;
     PREFIX_UNUSED(stmt);
     ss << "GIMPLE_RETURN:  ";
-    ss << phi_debug_tree(gimple_return_retval((greturn*)stmt));
+    ss << _tree(gimple_return_retval((greturn*)stmt));
     return ss.str();
 }
 
-string phi_debug_on_gimple_label(gimple *stmt)
+string _on_gimple_label(gimple *stmt)
 {
     std::stringstream ss;
     PREFIX_UNUSED(stmt);
     ss << "GIMPLE_LABEL:  ";
-    ss << phi_debug_tree(gimple_label_label((glabel*)stmt));
+    ss << _tree(gimple_label_label((glabel*)stmt));
     return ss.str();
 }
 
-string phi_debug_on_gimple_cond(gimple *stmt)
+string _on_gimple_cond(gimple *stmt)
 {
     std::stringstream ss;
 
     ss << "GIMPLE_COND:  ";
-    ss << phi_debug_tree(gimple_cond_lhs(stmt));
+    ss << _tree(gimple_cond_lhs(stmt));
     ss << " ";
-    ss << phi_debug_op(gimple_assign_rhs_code(stmt));
+    ss << _op(gimple_assign_rhs_code(stmt));
     ss << " ";
-    ss << phi_debug_tree(gimple_cond_rhs(stmt));
+    ss << _tree(gimple_cond_rhs(stmt));
     return ss.str();
 }
 
-string phi_debug_on_gimple_call(gimple *stmt)
+string _on_gimple_call(gimple *stmt)
 {
     std::stringstream ss;
     ss << "GIMPLE_CALL:  ";
     tree lhs = gimple_call_lhs(stmt);
     if (lhs)
     {
-        ss << phi_debug_tree(lhs);
+        ss << _tree(lhs);
         ss << " = ";
     }
     ss << fndecl_name(gimple_call_fndecl(stmt)) << "(";
     for (unsigned int i = 0; i < gimple_call_num_args(stmt); i++)
     {
-        ss << phi_debug_tree(gimple_call_arg(stmt, i));
+        ss << _tree(gimple_call_arg(stmt, i));
         if (i != gimple_call_num_args(stmt) - 1)
         {
             ss << ", ";
@@ -326,32 +326,32 @@ string phi_debug_on_gimple_call(gimple *stmt)
     return ss.str();
 }
 
-string phi_debug_on_gimple_assign(gimple *stmt)
+string _on_gimple_assign(gimple *stmt)
 {
     std::stringstream ss;
     ss << "GIMPLE_ASSIGN:  ";
     switch (gimple_num_ops(stmt))
     {
     case 2:
-        ss << phi_debug_tree(gimple_assign_lhs(stmt));
+        ss << _tree(gimple_assign_lhs(stmt));
         ss << " = ";
-        ss << phi_debug_tree(gimple_assign_rhs1(stmt));
+        ss << _tree(gimple_assign_rhs1(stmt));
         break;
     case 3:
-        ss << phi_debug_tree(gimple_assign_lhs(stmt));
+        ss << _tree(gimple_assign_lhs(stmt));
         ss << " = ";
-        ss << phi_debug_tree(gimple_assign_rhs1(stmt));
+        ss << _tree(gimple_assign_rhs1(stmt));
         ss << " ";
-        ss << phi_debug_op(gimple_assign_rhs_code(stmt));
+        ss << _op(gimple_assign_rhs_code(stmt));
         ss << " ";
-        ss << phi_debug_tree(gimple_assign_rhs2(stmt));
+        ss << _tree(gimple_assign_rhs2(stmt));
         break;
     }
 
     return ss.str();
 }
 
-string phi_debug_statements(basic_block bb)
+string _statements(basic_block bb)
 {
     std::stringstream ss;
     for (gimple_stmt_iterator gsi = gsi_start_bb(bb); !gsi_end_p(gsi); gsi_next(&gsi))
@@ -361,22 +361,22 @@ string phi_debug_statements(basic_block bb)
         switch (gimple_code(stmt))
         {
         case GIMPLE_ASSIGN:
-            ss << phi_debug_on_gimple_assign(stmt);
+            ss << _on_gimple_assign(stmt);
             break;
         case GIMPLE_CALL:
-            ss << phi_debug_on_gimple_call(stmt);
+            ss << _on_gimple_call(stmt);
             break;
         case GIMPLE_COND:
-            ss << phi_debug_on_gimple_cond(stmt);
+            ss << _on_gimple_cond(stmt);
             break;
         case GIMPLE_LABEL:
-            ss << phi_debug_on_gimple_label(stmt);
+            ss << _on_gimple_label(stmt);
             break;
         case GIMPLE_RETURN:
-            ss << phi_debug_on_gimple_return(stmt);
+            ss << _on_gimple_return(stmt);
             break;
         default:
-            ss << phi_debug_on_unknown_stmt(stmt);
+            ss << _on_unknown_stmt(stmt);
             break;
         }
         ss << "\n\n";
@@ -385,13 +385,13 @@ string phi_debug_statements(basic_block bb)
     return ss.str();
 }
 
-std::string phi_debug_bb_id(basic_block bb)
+std::string _bb_id(basic_block bb)
 {
     int index = bb->index;
 
     std::stringstream dst_stream;
 
-    string stmts = phi_debug_statements(bb);
+    string stmts = _statements(bb);
     dst_stream << index << graph_args({graph_arg("label", q(stmts))});
 
     edge e;
@@ -404,30 +404,30 @@ std::string phi_debug_bb_id(basic_block bb)
     return dst_stream.str();
 }
 
-std::string phi_debug_function(function *fn)
+std::string _function(function *fn)
 {
     std::stringstream res;
 
     basic_block bb;
     FOR_EACH_BB_FN(bb, fn)
     {
-        res << phi_debug_bb_id(bb) << std::endl;
+        res << _bb_id(bb) << std::endl;
     }
 
     return graph(res.str(), string(function_name(fn)));
 }
 
-unsigned int phi_debug_pass::execute(function *fn)
+unsigned int _pass::execute(function *fn)
 {
-    string res = phi_debug_function(fn);
+    string res = _function(fn);
     string filename = out_path + "/" + string(function_name(fn));
     PRINT(filename)
     write_to_file(filename, res);
     return 0;
 }
 
-static struct register_pass_info phi_debug_pass_info = {
-    .pass = new phi_debug_pass(g),
+static struct register_pass_info _pass_info = {
+    .pass = new _pass(g),
     .reference_pass_name = "ssa",
     .ref_pass_instance_number = 1,
     .pos_op = PASS_POS_INSERT_AFTER, // то есть плагин сработает
@@ -443,8 +443,8 @@ int plugin_init(struct plugin_name_args *args, struct plugin_gcc_version *versio
 
     out_path = (args->argv)[0].value;
 
-    register_callback(args->base_name, PLUGIN_INFO, NULL, &phi_debug_plugin_info);
-    register_callback(args->base_name, PLUGIN_PASS_MANAGER_SETUP, NULL, &phi_debug_pass_info);
+    register_callback(args->base_name, PLUGIN_INFO, NULL, &_plugin_info);
+    register_callback(args->base_name, PLUGIN_PASS_MANAGER_SETUP, NULL, &_pass_info);
 
     return 0;
 }

@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-int test_gimple_cst() {
+int gimple_cst() {
     const int t = time(NULL);
     printf("%d", t);
     printf("%f", 5.25);
@@ -16,7 +16,7 @@ int test_gimple_cst() {
     return 0;
 }
 
-int test_gimple_arithm() {
+int gimple_arithm() {
     int a, b, c, d, e, f;
     scanf("%d%d%d%d%d%d", &a, &b, &c, &d, &e, &f);
     int g;
@@ -24,7 +24,7 @@ int test_gimple_arithm() {
     return 0;
 }
 
-int test_gimple_phi() {
+int gimple_phi() {
     int w, x, y, z;
     scanf("%d", &x);
     x = x - 3;
@@ -47,7 +47,7 @@ struct TEST_MEM {
     int c;
 };
 
-struct TEST_MEM*test_gimple_memory() {
+struct TEST_MEM*gimple_memory() {
     int n;
     scanf("%d", &n);
     struct TEST_MEM*arr = (struct TEST_MEM*) malloc(n * sizeof(struct TEST_MEM));
